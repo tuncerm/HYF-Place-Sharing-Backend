@@ -3,15 +3,17 @@ const bodyParser = require('body-parser');
 
 const usersRoutes = require('./routes/users-routes');
 const placesRoutes = require('./routes/places-routes');
-
+const HttpError = require('./models/http-error');
 const app = express();
-
-
 
 app.use(bodyParser.json());
 
-app.use('/api/users', usersRoutes);
 app.use('/api/places', placesRoutes);
+app.use('/api/users', usersRoutes);
+
+app.use((req, res, next)=>{
+    next(new HttpError("Not Found", 404));
+})
 
 app.use((error, req, res, next)=>{
     if(res.headerSend){
