@@ -48,7 +48,6 @@ const createPlace = (req, res, next) => {
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
-        console.log(errors);
         return next(new HttpError('Invalid inputs detected.', 422));
     }
 
@@ -69,6 +68,12 @@ const createPlace = (req, res, next) => {
 }
 
 const updatePlaceById = (req, res, next) => {
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return next(new HttpError('Invalid inputs detected.', 422));
+    }
+
     const { title, description } = req.body;
     const placeId = req.params.pid;
 
@@ -83,6 +88,11 @@ const updatePlaceById = (req, res, next) => {
 
 const deletePlaceById = (req, res, next) => {
     const placeId = req.params.pid;
+
+    if(!DUMMY_PLACES.find(p=>p.id===placeId)){
+        return next(new HttpError('A place with the given ID does not exist.', 404));
+    }
+
     DUMMY_PLACES = DUMMY_PLACES.filter(p=>p.id !== placeId);
     res.status(200).json({message: `Deleted place: ${placeId}`});
 }
