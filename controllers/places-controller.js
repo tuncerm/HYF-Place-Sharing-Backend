@@ -1,23 +1,8 @@
-const uuid = require('uuid/v4');
 const {validationResult} = require('express-validator');
 const getCoordsForAddress = require('../util/location');
 const Place = require('../models/place');
 
 const HttpError = require('../models/http-error');
-
-let DUMMY_PLACES = [
-    {
-        id: 'p1',
-        title: 'Empire State Building',
-        description: 'One of the most famous sky scrapers in the world!',
-        location: {
-        lat: 40.7484474,
-        lng: -73.9871516
-        },
-        address: '20 W 34th St, New York, NY 10001',
-        creator: 'u1'
-    }
-];
 
 const getPlaceById = async (req, res, next) => {
     const placeId = req.params.pid;
@@ -114,15 +99,22 @@ const updatePlaceById = async (req, res, next) => {
     res.status(200).json({place: place.toObject({getters: true})});
 }
 
-const deletePlaceById = (req, res, next) => {
+const deletePlaceById = async (req, res, next) => {
     const placeId = req.params.pid;
-
-    if(!DUMMY_PLACES.find(p=>p.id===placeId)){
-        return next(new HttpError('A place with the given ID does not exist.', 404));
+    let place;
+    try{
+        place = await Place.findById(placeId);
+    } catch {
+        return next(new HttpError('Could not delete place.', 500));
     }
 
-    DUMMY_PLACES = DUMMY_PLACES.filter(p=>p.id !== placeId);
-    res.status(200).json({message: `Deleted place: ${placeId}`});
+    try{
+        await place.remove();
+    } catch {
+        return next(new HttpError('Could not remove place.', 500));
+    }
+
+    res.status(200).json({message: `Deleted place.`});
 }
 
 module.exports = {
