@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose  = require('mongoose');
 
 const usersRoutes = require('./routes/users-routes');
 const placesRoutes = require('./routes/places-routes');
@@ -21,5 +22,10 @@ app.use((error, req, res, next)=>{
     }
     res.status(error.code || 500).json({message: error.message || "Something went wrong!"})
 });
-
-app.listen(5000);
+const URL = 'mongodb+srv://hyftest:test0102@testbed-qtc2h.azure.mongodb.net/hyfplaces?retryWrites=true&w=majority'
+mongoose
+    .connect(URL)
+    .then(()=>{
+        app.listen(5000);
+    })
+    .catch(console.error);
