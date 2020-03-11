@@ -1,4 +1,4 @@
-const {model, Schema} = require('mongoose');
+const {model, Schema, Types} = require('mongoose');
 
 const thisSchema =  new Schema({
     title: {type: String, required: true},
@@ -10,7 +10,7 @@ const thisSchema =  new Schema({
         lat: {type: Number, required: true},
         lng: {type: Number, required: true}
     },
-    creator: {type: String, required: true}
+    creator: {type: Types.ObjectId, required: true, ref: 'User'}
 });
 
 module.exports = model('Place', thisSchema);

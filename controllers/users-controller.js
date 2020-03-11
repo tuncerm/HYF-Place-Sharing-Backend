@@ -23,7 +23,7 @@ const signup = async (req, res, next) => {
         return next(new HttpError('Invalid inputs detected.', 422));
     }
     
-    const {name, email, password, image, places} = req.body;
+    const {name, email, password, image} = req.body;
 
     let existingUser;
 
@@ -42,7 +42,7 @@ const signup = async (req, res, next) => {
         email,
         password,
         image: 'https://www.gettyimages.nl/detail/foto/monument-valley-glow-royalty-free-beeld/1007019940',
-        places: 'will be added'
+        places: []
     });
 
     try{
