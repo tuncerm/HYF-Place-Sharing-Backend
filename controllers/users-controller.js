@@ -2,6 +2,7 @@ const uuid = require('uuid/v4');
 const {validationResult} = require('express-validator');
 
 const HttpError = require('../models/http-error');
+const User = require('../models/user');
 
 const DUMMY_USERS = [
     {
@@ -12,33 +13,46 @@ const DUMMY_USERS = [
     }
 ]
 
-const getUsers = (req, res, next) => {
+const getUsers = async (req, res, next) => {
     res.json({users: DUMMY_USERS});
 }
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
         return next(new HttpError('Invalid inputs detected.', 422));
     }
     
-    const {name, email, password} = req.body;
+    const {name, email, password, image, places} = req.body;
 
-    const hasUser = DUMMY_USERS.find(user=>user.email === email);
+    let existingUser;
 
-    if(hasUser){
-        return next(new HttpError('Email in use!', 422));
+    try{
+        existingUser = await User.findOne({email}).exec();
+    } catch {
+        return next(new HttpError('Something went wrong!', 500));
     }
 
-    const createdUser = {
-        id: uuid(),
+    if(existingUser){
+        return next(new HttpError('User already exist!', 422));
+    }
+
+    const createdUser = new User({
         name,
         email,
-        password
+        password,
+        image: 'https://www.gettyimages.nl/detail/foto/monument-valley-glow-royalty-free-beeld/1007019940',
+        places: 'will be added'
+    });
+
+    try{
+        await createdUser.save();
+    } catch (error){
+        return next(new HttpError('Failed to create User', 500));
     }
-    DUMMY_USERS.push(createdUser);
-    res.status(201).json({user:createdUser});
+
+    res.status(201).json({user: createdUser.toObject({getters: true})});
 }
 
 const login = (req, res, next) => {
