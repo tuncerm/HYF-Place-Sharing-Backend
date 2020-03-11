@@ -1,6 +1,9 @@
+const mongoose = require('mongoose');
+
 const {validationResult} = require('express-validator');
 const getCoordsForAddress = require('../util/location');
 const Place = require('../models/place');
+const User = require('../models/user');
 
 const HttpError = require('../models/http-error');
 
@@ -59,11 +62,28 @@ const createPlace = async (req, res, next) => {
         address,
         image: 'https://www.gettyimages.nl/detail/foto/monument-valley-glow-royalty-free-beeld/1007019940',
         creator
-    })
+    });
+
+    let user;
+    try{
+        user = await User.findById(creator);
+    } catch (error){
+        return next(new HttpError('Failed to create place', 500));
+    }
+
+    if(!user){
+        return next(new HttpError('User not found!', 404));
+    }
 
     try{
-        await createdPlace.save();
+        const session =  await mongoose.startSession();
+        session.startTransaction();
+        await createdPlace.save({session});
+        user.places.push(createdPlace);
+        await user.save({session});
+        await session.commitTransaction();
     } catch (error){
+        console.log(error);
         return next(new HttpError('Failed to create place', 500));
     }
 

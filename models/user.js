@@ -1,4 +1,4 @@
-const {model, Schema} = require('mongoose');
+const {model, Schema, Types} = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const thisSchema =  new Schema({
