@@ -27,7 +27,7 @@ const getPlacesByUserId = async (req, res, next) => {
     const userId = req.params.uid;
     let places;
     try{
-        places = await Place.find({creator: userId});
+        places = await Place.find({creator: userId}).exec();
     } catch {
         return next(new HttpError('Could not find place', 500));
     }

@@ -41,7 +41,7 @@ const signup = async (req, res, next) => {
         name,
         email,
         password,
-        image: 'https://www.gettyimages.nl/detail/foto/monument-valley-glow-royalty-free-beeld/1007019940',
+        image: req.file.path,
         places: []
     });
 
