@@ -1,25 +1,18 @@
 const axios = require('axios');
-
-const API_KEY = "ASD";
-
 const HttpError = require('../models/http-error');
 
+const {GEOCODE_HOST, GEOCODE_ACCESS_TOKEN} = process.env;
+
 async function getCoordsForAddress(address) {
-    return {lat: 34.3223412, lng: -73.3325543}
-
-    // const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`)
+    const response = await axios.get(`${GEOCODE_HOST}${encodeURIComponent(address)}.json?access_token=${GEOCODE_ACCESS_TOKEN}`)
     
-    
-    // const data = response.data;
+    if(!response.data || response.data.features.length < 1){
+        throw(new HttpError('Could not fould the location for the given address.', 422));
+    }
 
-    // if(!data || data.status === 'ZERO_RESULTS'){
-    //     const error = new HttpError('Could not fould the location for the given address.', 422);
-    //     throw(error);
-    // }
+    const [lng, lat] = response.data.features[0].center;
 
-    // const coordinates = data.results[0].geometry.location;
-
-    // return coordinates;
+    return {lat, lng}
 }
 
 module.exports = getCoordsForAddress;

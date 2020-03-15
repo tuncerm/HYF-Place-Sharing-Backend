@@ -1,0 +1,7 @@
+{
+    "env":{
+        "JWT_SECRET": "Some secret",
+        "GEOCODE_HOST": "https://api.mapbox.com/geocoding/v5/mapbox.places/",
+        "GEOCODE_ACCESS_TOKEN": "pk.secret.key"
+    }
+}
