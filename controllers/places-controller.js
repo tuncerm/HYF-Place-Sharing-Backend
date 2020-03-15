@@ -67,8 +67,8 @@ const createPlace = async (req, res, next) => {
 
     let user;
     try{
-        user = await User.findById(creator);
-    } catch (error){
+        user = await User.findById(req.userData.userId).exec();
+    } catch {
         return next(new HttpError('Failed to create place', 500));
     }
 
@@ -83,8 +83,7 @@ const createPlace = async (req, res, next) => {
         user.places.push(createdPlace);
         await user.save({session});
         await session.commitTransaction();
-    } catch (error){
-        console.log(error);
+    } catch {
         return next(new HttpError('Failed to create place', 500));
     }
 

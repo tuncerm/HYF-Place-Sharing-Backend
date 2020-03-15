@@ -67,7 +67,7 @@ const signup = async (req, res, next) => {
         return next(new HttpError('Failed to Login newly created User', 500));
     }
 
-    res.status(201).json({user: createdUser.id, email, token});
+    res.status(201).json({userId: createdUser.id, email, token});
 }
 
 const login = async (req, res, next) => {
@@ -98,9 +98,9 @@ const login = async (req, res, next) => {
 
     let token;
     try{
-        token = await jwt.sign({userId: createdUser.id, email}, process.env.JWT_SECRET, {expiresIn: '1h'});
+        token = await jwt.sign({userId: existingUser.id, email}, process.env.JWT_SECRET, {expiresIn: '1h'});
     } catch {
-        return next(new HttpError('Failed to Login newly created User', 500));
+        return next(new HttpError('Failed to log the User in.', 500));
     }
 
     res.status(201).json({userId: existingUser.id, email, token});
