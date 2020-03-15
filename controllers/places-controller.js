@@ -1,3 +1,4 @@
+const fs = require('fs');
 const mongoose = require('mongoose');
 
 const {validationResult} = require('express-validator');
@@ -58,9 +59,9 @@ const createPlace = async (req, res, next) => {
     const createdPlace = new Place({
         title,
         description,
-        location: coordinates,
         address,
-        image: 'https://www.gettyimages.nl/detail/foto/monument-valley-glow-royalty-free-beeld/1007019940',
+        location: coordinates,
+        image: req.file.path,
         creator
     });
 
@@ -132,6 +133,8 @@ const deletePlaceById = async (req, res, next) => {
         return next(new HttpError('Could not findplace to delete.', 404));
     }
 
+    const imagePath = place.image;
+
     try{
         const session =  await mongoose.startSession();
         session.startTransaction();
@@ -142,7 +145,9 @@ const deletePlaceById = async (req, res, next) => {
     } catch (error){
         return next(new HttpError('Could not remove place.', 500));
     }
-
+    fs.unlink(imagePath, err=>{
+        console.log(err);
+    });
     res.status(200).json({message: `Deleted place.`});
 }
 
