@@ -47,7 +47,7 @@ const createPlace = async (req, res, next) => {
         return next(new HttpError('Invalid inputs detected.', 422));
     }
 
-    const { title, description, address, creator } = req.body;
+    const { title, description, address } = req.body;
 
     let coordinates;
     try{
@@ -62,7 +62,7 @@ const createPlace = async (req, res, next) => {
         address,
         location: coordinates,
         image: req.file.path,
-        creator
+        creator: req.userData.userId
     });
 
     let user;
@@ -108,6 +108,10 @@ const updatePlaceById = async (req, res, next) => {
         return next(new HttpError('Could not update place.', 500));
     }
 
+    if(place.creator.toString() !== req.userData.userId){
+        return next(new HttpError('You are not authorized to edit.', 401));
+    }
+
     place.title = title;
     place.description = description;
 
@@ -131,6 +135,10 @@ const deletePlaceById = async (req, res, next) => {
 
     if(!place){
         return next(new HttpError('Could not findplace to delete.', 404));
+    }
+
+    if(place.creator.id !== req.userData.userId){
+        return next(new HttpError('You are not authorized to delete this.', 401));
     }
 
     const imagePath = place.image;
