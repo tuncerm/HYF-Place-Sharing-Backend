@@ -19,13 +19,14 @@ const getUsers = async (req, res, next) => {
 }
 
 const signup = async (req, res, next) => {
+    console.log(req.file.url)
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
         return next(new HttpError('Invalid inputs detected.', 422));
     }
     
-    const {name, email, password, image} = req.body;
+    const {name, email, password} = req.body;
 
     let existingUser;
 
@@ -50,7 +51,7 @@ const signup = async (req, res, next) => {
         name,
         email,
         password: hashedPassword,
-        image: req.file.path,
+        image: req.file.url,
         places: []
     });
 
