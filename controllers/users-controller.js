@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+// const uuid = require('uuid/v4');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator');
